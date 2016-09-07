@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-import ace
+import configutil
 
 here = path.abspath(path.dirname(__file__))
 
@@ -13,18 +13,18 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='ace',
+    name='configutil',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version=ace.__version__,
+    version=configutil.__version__,
 
-    description='args : config : environment',
+    description='Arguments, configuration, and environment resolver',
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/silverfernsys/ace',
+    url='https://github.com/silverfernsys/configutil',
 
     # Author details
     author='Silver Fern Systems',

@@ -1,6 +1,10 @@
 from argparse import ArgumentParser, ArgumentError
-from ConfigParser import SafeConfigParser, NoOptionError, NoSectionError
 from os import getenv
+
+try:
+    from ConfigParser import SafeConfigParser, NoOptionError, NoSectionError
+except:
+    from configparser import SafeConfigParser, NoOptionError, NoSectionError
 
 
 class ConfigError(Exception):

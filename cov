@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-coverage run --source ace -m py.test
+coverage run --source configutil -m py.test
 coverage report -m

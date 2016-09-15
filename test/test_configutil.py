@@ -145,8 +145,8 @@ class TestConfigutil(unittest.TestCase):
                 self.assertEqual(expected_output, err)
         self.assertEqual(cm.exception.code, 2)
 
-    """
-    @mock.patch('configutil.getenv')
+    
+    @mock.patch('configutil.configutil.getenv')
     def test_config_with_envs(self, mock_env):
         sys.argv = [sys.argv[0]]
         envs = {'arg0b': 'True', 'arg0c': 'False',
@@ -166,7 +166,7 @@ class TestConfigutil(unittest.TestCase):
         self.assertEqual(args.section1.arg1c, 1000)
         self.assertEqual(args.command, None)
 
-    @mock.patch('configutil.getenv')
+    @mock.patch('configutil.configutil.getenv')
     def test_config_with_command_envs(self, mock_env):
         sys.argv = [sys.argv[0]]
         sys.argv.extend((['command0', '--arg0a', '1.1',
@@ -191,7 +191,7 @@ class TestConfigutil(unittest.TestCase):
         self.assertEqual(args.section1.arg1b, 'envstring1b')
         self.assertEqual(args.section1.arg1c, 1000)
         self.assertEqual(args.command, 'command0')
-    """
+    
     def test_config_help(self):
         sys.argv = [sys.argv[0]]
         sys.argv.extend((['--help']))

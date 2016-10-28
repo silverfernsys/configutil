@@ -2,6 +2,15 @@
     :target: https://pypi.python.org/pypi/configutil
 .. image:: https://img.shields.io/pypi/l/configutil.svg
     :target: https://pypi.python.org/pypi/configutil
+.. image:: https://img.shields.io/pypi/status/configutil.svg
+    :target: https://pypi.python.org/pypi/configutil
+.. image:: https://img.shields.io/pypi/implementation/configutil.svg
+    :target: https://pypi.python.org/pypi/configutil
+.. image:: https://img.shields.io/pypi/pyversions/configutil.svg
+    :target: https://pypi.python.org/pypi/configutil
+.. image:: https://img.shields.io/pypi/format/configutil.svg
+    :target: https://pypi.python.org/pypi/configutil
+.. image:: https://img.shields.io/librariesio/github/silverfernsys/configutil.svg
 
 configutil
 ==========

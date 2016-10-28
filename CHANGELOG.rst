@@ -12,4 +12,4 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Initial public release
 
 
-.. _`0.1`: https://github.com/silverfernsys/configutil/commit/959f3fb8f5d7aa79752ba9f88d61f704754e5f59
+.. _`0.0.1.dev4`: https://github.com/silverfernsys/configutil/commit/959f3fb8f5d7aa79752ba9f88d61f704754e5f59

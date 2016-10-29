@@ -1,3 +1,4 @@
+import sys
 from argparse import ArgumentParser, ArgumentError
 from os import getenv
 
@@ -164,6 +165,10 @@ class Config(object):
             return arg_type(arg)
 
     def __repr__(self):
-        items = self.__dict__.iteritems()
+        if sys.version_info >= (3, 0):
+            items = self.__dict__.items()
+        else:
+            items = self.__dict__.iteritems()
+
         vals = ', '.join('%s=%r' % (k, v) for (k, v) in items)
         return '<{0}({1}>'.format(self.__class__.__name__, vals)

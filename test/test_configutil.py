@@ -111,10 +111,8 @@ class TestConfigutil(unittest.TestCase):
 
     def test_config_error(self):
         config = Config()
-        with self.assertRaises(AttributeError) as context:
+        with self.assertRaises(AttributeError):
             config.parse()
-        self.assertEquals(context.exception.message,
-            'Missing path to configuration file.')
 
     def test_config_get_section(self):
         config = self.setup_config([self.config_path])
@@ -123,8 +121,14 @@ class TestConfigutil(unittest.TestCase):
         self.assertEquals(section.__repr__(),
             '<ConfigSection(name=section2, required=True, arguments=[])>')
         section.add_argument('arg_name', 'arg_help', float)
-        self.assertEquals(section.arguments[0].__repr__(),
-            '<ConfigArgument(name=arg_name, help=arg_help, type=<type \'float\'>, choices=None)>')
+
+        if sys.version_info >= (3, 0):
+            self.assertEquals(section.arguments[0].__repr__(),
+                '<ConfigArgument(name=arg_name, help=arg_help, type=<class \'float\'>, choices=None)>')
+        else:
+            self.assertEquals(section.arguments[0].__repr__(),
+                '<ConfigArgument(name=arg_name, help=arg_help, type=<type \'float\'>, choices=None)>')
+
         with self.assertRaises(SectionError):
             config.get_section('section3')
         with self.assertRaises(MissingSection):
@@ -143,7 +147,6 @@ class TestConfigutil(unittest.TestCase):
         self.assertEqual(args.section1.arg1b, 'configstring1b')
         self.assertEqual(args.section1.arg1c, 1000)
         self.assertEqual(args.command, None)
-        # print(args.section0.arg2a)
 
     def test_config_with_argv(self):
         sys.argv = [sys.argv[0]]

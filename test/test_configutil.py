@@ -195,6 +195,14 @@ class TestConfigutil(unittest.TestCase):
                 self.assertEqual(expected_output, err)
         self.assertEqual(cm.exception.code, 2)
 
+    def test_config_with_config_arg(self):
+        sys.argv = [sys.argv[0]]
+        sys.argv.extend(['--config', self.config_path])
+        config = self.setup_config(self.config_path)
+        section = config.get_section('section0')
+        section.add_argument('arg0d', 'a boolean', bool)
+        with self.assertRaises(ConfigError) as cm:
+            config.parse()
     
     @mock.patch('configutil.configutil.getenv')
     def test_config_with_envs(self, mock_env):
@@ -242,6 +250,23 @@ class TestConfigutil(unittest.TestCase):
         self.assertEqual(args.section1.arg1c, 1000)
         self.assertEqual(args.command, 'command0')
         self.assertIsNotNone(config.__repr__())
+
+    @mock.patch('configutil.configutil.getenv')
+    def test_config_with_command_envs_error(self, mock_env):
+        sys.argv = [sys.argv[0]]
+        sys.argv.extend((['command0', '--arg0a', '1.1',
+            '--arg1a', 'argstring1a']))
+        envs = {'arg0b': 'True', 'arg0c': 'False',
+            'arg1a': 'envstring1a'}
+        mock_env.side_effect = lambda k: envs.get(k, None)
+
+        config = self.setup_config(self.missing_path)
+        config.add_command('command0', 'command0 help')
+        config.add_command('command1', 'command1 help')
+        config.add_command('command2', 'command2 help')
+
+        with self.assertRaises(ConfigError):
+            args = config.parse()
     
     def test_config_help(self):
         sys.argv = [sys.argv[0]]

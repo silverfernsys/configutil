@@ -22,9 +22,11 @@ except:
 from contextlib import contextmanager
 
 try:
-    from configutil import Config
+    from configutil import Config, ConfigError, \
+        MissingSection, SectionError, ConfigArgumentError
 except:
-    from configutil.configutil import Config
+    from configutil.configutil import Config, ConfigError, \
+        MissingSection, SectionError, ConfigArgumentError
 
 
 @contextmanager
@@ -72,7 +74,12 @@ class TestConfigutil(unittest.TestCase):
 
     def setup_config(self, path):
         config = Config()
-        config.add_path(path)
+
+        if type(path) == list:
+            config.add_paths(path)
+        else:
+            config.add_path(path)
+
         section = config.add_section('section0')
         section.add_argument('arg0a', 'a float', float)
         section.add_argument('arg0b', 'a boolean', bool)
@@ -85,9 +92,48 @@ class TestConfigutil(unittest.TestCase):
 
         return config
 
+    def test_error_creation(self):
+        error = ConfigError('arg_name')
+        self.assertEquals(error.arg, 'arg_name')
+        self.assertEquals(error.message, 'Missing configuration argument "arg_name".')
+
+        error = MissingSection('section_name')
+        self.assertEquals(error.arg, 'section_name')
+        self.assertEquals(error.message, 'Missing section "section_name" in configuration.')
+
+        error = SectionError('section_name')
+        self.assertEquals(error.arg, 'section_name')
+        self.assertEquals(error.message, 'Section "section_name" does not exist in configuration.')
+
+        error = ConfigArgumentError('arg_name')
+        self.assertEquals(error.arg, 'arg_name')
+        self.assertEquals(error.message, '')
+
+    def test_config_error(self):
+        config = Config()
+        with self.assertRaises(AttributeError) as context:
+            config.parse()
+        self.assertEquals(context.exception.message,
+            'Missing path to configuration file.')
+
+    def test_config_get_section(self):
+        config = self.setup_config([self.config_path])
+        section = config.add_section('section2')
+        self.assertEquals(section, config.get_section('section2'))
+        self.assertEquals(section.__repr__(),
+            '<ConfigSection(name=section2, required=True, arguments=[])>')
+        section.add_argument('arg_name', 'arg_help', float)
+        self.assertEquals(section.arguments[0].__repr__(),
+            '<ConfigArgument(name=arg_name, help=arg_help, type=<type \'float\'>, choices=None)>')
+        with self.assertRaises(SectionError):
+            config.get_section('section3')
+        with self.assertRaises(MissingSection):
+            args = config.parse()
+
+
     def test_config(self):
         sys.argv = [sys.argv[0]]
-        config = self.setup_config(self.config_path)
+        config = self.setup_config([self.config_path])
         args = config.parse()
         self.assertEqual(args, config.arguments)
         self.assertEqual(args.section0.arg0a, 1234.123)
@@ -97,6 +143,7 @@ class TestConfigutil(unittest.TestCase):
         self.assertEqual(args.section1.arg1b, 'configstring1b')
         self.assertEqual(args.section1.arg1c, 1000)
         self.assertEqual(args.command, None)
+        # print(args.section0.arg2a)
 
     def test_config_with_argv(self):
         sys.argv = [sys.argv[0]]
@@ -141,7 +188,7 @@ class TestConfigutil(unittest.TestCase):
         expected_output = 'usage: {cmd} [-h]  ...\n' \
             '{cmd}: error: unrecognized arguments: command0'.format(cmd=sys.argv[0])
         with self.assertRaises(SystemExit) as cm:
-            with capture(config.parse) as (out, err):
+            with capture(config.parse) as out, err:
                 self.assertEqual(expected_output, err)
         self.assertEqual(cm.exception.code, 2)
 
@@ -191,6 +238,7 @@ class TestConfigutil(unittest.TestCase):
         self.assertEqual(args.section1.arg1b, 'envstring1b')
         self.assertEqual(args.section1.arg1c, 1000)
         self.assertEqual(args.command, 'command0')
+        self.assertIsNotNone(config.__repr__())
     
     def test_config_help(self):
         sys.argv = [sys.argv[0]]
@@ -213,7 +261,7 @@ class TestConfigutil(unittest.TestCase):
         'command2  command2 help\n'.format(cmd=sys.argv[0])
 
         with self.assertRaises(SystemExit) as cm:
-            with capture(config.parse) as (out, err):
+            with capture(config.parse) as out, err:
                 self.assertEqual(expected_output, err)
         self.assertEqual(cm.exception.code, 0)
 
@@ -241,7 +289,7 @@ class TestConfigutil(unittest.TestCase):
         '  --arg0c ARG0C    a boolean\n'.format(cmd=sys.argv[0])
 
         with self.assertRaises(SystemExit) as cm:
-            with capture(config.parse) as (out, err):
+            with capture(config.parse) as out, err:
                 self.assertEqual(expected_output, err)
         self.assertEqual(cm.exception.code, 0)
 

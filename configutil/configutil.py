@@ -27,7 +27,7 @@ class SectionError(ConfigError):
 
 class ConfigArgumentError(ConfigError):
     def __init__(self, arg):
-        self.arg
+        self.arg = arg
         self.message = ''
 
 

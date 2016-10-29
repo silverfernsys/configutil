@@ -195,6 +195,21 @@ class TestConfigutil(unittest.TestCase):
                 self.assertEqual(expected_output, err)
         self.assertEqual(cm.exception.code, 2)
 
+    def test_config_with_unknown_command(self):
+        sys.argv = [sys.argv[0]]
+        sys.argv.extend((['command2', '--arg0a', '1.1',
+            '--arg1a', 'argstring1a']))
+        config = self.setup_config(self.config_path)
+        config.add_command('command0', 'command0 help')
+        config.add_command('command1', 'command1 help')
+        expected_output = 'usage: {cmd} [-h]  ...\n' \
+            '{cmd}: error: argument : invalid choice: \'command2\'' \
+            '(choose from \'command0\', \'command1\')'.format(cmd=sys.argv[0])
+        with self.assertRaises(SystemExit) as cm:
+            with capture(config.parse) as out, err:
+                self.assertEqual(expected_output, err)
+        self.assertEqual(cm.exception.code, 2)
+
     def test_config_with_config_arg(self):
         sys.argv = [sys.argv[0]]
         sys.argv.extend(['--config', self.config_path])

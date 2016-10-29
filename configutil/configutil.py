@@ -120,8 +120,6 @@ class Config(object):
         try:
             data = {k : self._section_args(args, self.config_parser, v)
                 for (k, v) in self.sections.items()}
-        except NoOptionError as e:
-            raise ConfigError(e.args)
         except NoSectionError as e:
             raise MissingSection(e.section)
 
